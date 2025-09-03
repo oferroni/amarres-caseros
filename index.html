@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ritual de Amor — Personalizado (sin materiales)</title>
+<style>
+  :root{--bg:#f8fafc;--card:#fff;--ink:#0f172a;--muted:#64748b;--border:#e5e7eb;--primary:#111827}
+  *{box-sizing:border-box}
+  body{font-family:system-ui,Segoe UI,Inter,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0}
+  .wrap{max-width:900px;margin:28px auto;padding:0 16px}
+  h1{font-size:26px;margin:0}
+  .sub{color:var(--muted);margin:6px 0 16px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 1px 10px rgba(0,0,0,.04);margin-bottom:12px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+  input,select,textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;background:#fff}
+  textarea{min-height:84px;resize:vertical}
+  button{padding:12px 16px;border-radius:12px;border:1px solid var(--primary);background:var(--primary);color:#fff;cursor:pointer}
+  button.secondary{background:#fff;color:var(--primary)}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  .result{white-space:pre-wrap;line-height:1.55}
+  .muted{color:var(--muted)}
+  hr{border:none;border-top:1px solid var(--border);margin:12px 0}
+  @media (max-width:760px){.row{grid-template-columns:1fr}}
+  @media print{.no-print{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>💗 Ritual de Amor — Personalizado</h1>
+  <div class="sub">Sin materiales. Enfoque simbólico y de bienestar emocional, cuidando el consentimiento y los límites.</div>
+
+  <div class="card">
+    <strong>Ética y seguridad</strong>
+    <p class="muted" style="margin:8px 0 0">
+      Este ritual es <b>simbólico</b> y apunta a tu <b>bienestar emocional</b>. No busca manipular ni forzar voluntades.
+      Priorizá siempre el <b>consentimiento</b>, la conversación honesta y tu seguridad personal.
+    </p>
+  </div>
+
+  <div class="card">
+    <strong>Tus respuestas</strong>
+    <div class="row" style="margin-top:8px">
+      <div>
+        <label>Tu nombre</label>
+        <input id="youName" placeholder="Tu nombre" />
+      </div>
+      <div>
+        <label>Nombre de tu persona especial</label>
+        <input id="partnerName" placeholder="Nombre de tu pareja/interés" />
+      </div>
+
+      <div>
+        <label>Estado actual</label>
+        <select id="status">
+          <option value="pareja">Estamos en pareja</option>
+          <option value="distantes">Estamos distantes</option>
+          <option value="separados">Nos separamos</option>
+          <option value="interes">Hay interés pero no relación</option>
+        </select>
+      </div>
+      <div>
+        <label>Objetivo principal</label>
+        <select id="goal">
+          <option value="dulzura">Dulzura y armonía</option>
+          <option value="reconciliacion">Reconciliación</option>
+          <option value="pasional">Conexión pasional (respetuosa)</option>
+          <option value="compromiso">Compromiso y estabilidad</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Estilo del ritual</label>
+        <select id="style">
+          <option value="meditacion">Meditación guiada</option>
+          <option value="escritura">Escritura terapéutica</option>
+          <option value="visualizacion">Visualización creativa</option>
+          <option value="afirmaciones">Afirmaciones en voz baja</option>
+        </select>
+      </div>
+      <div>
+        <label>Momento preferido</label>
+        <select id="moment">
+          <option value="mañana">Mañana (claridad)</option>
+          <option value="tarde">Tarde (serenidad)</option>
+          <option value="noche">Noche (introspección)</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Frecuencia</label>
+        <select id="freq">
+          <option value="7">Diario por 7 días</option>
+          <option value="14">Diario por 14 días</option>
+          <option value="28">3 veces por semana (28 días)</option>
+        </select>
+      </div>
+      <div>
+        <label>Privacidad</label>
+        <select id="privacy">
+          <option value="discreto">Discreto (5–7 min)</option>
+          <option value="completo">Completo (10–15 min)</option>
+        </select>
+      </div>
+    </div>
+
+    <label style="margin-top:10px">Tu intención en palabras (opcional)</label>
+    <textarea id="intention" placeholder="Ej: sanar rencores, volver a escucharnos, fortalecer la ternura."></textarea>
+
+    <div class="actions" style="margin-top:10px">
+      <button id="btnGen">Generar ritual</button>
+      <button class="secondary no-print" id="btnCopy">Copiar ritual</button>
+      <button class="secondary no-print" onclick="window.print()">Imprimir / Guardar PDF</button>
+      <button class="secondary no-print" id="btnClear">Limpiar</button>
+    </div>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none">
+    <strong>🕯️ Tu ritual (simbólico)</strong>
+    <div id="result" class="result" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<script>
+function $(q){ return document.querySelector(q); }
+function today(){ const d = new Date(); return d.toLocaleDateString(); }
+
+function buildIntro(status){
+  const map = {
+    pareja: "Acompaña una relación existente. Favorece la escucha y los pequeños gestos.",
+    distantes: "Suaviza la distancia, invita a abrir conversaciones con respeto.",
+    separados: "Ayuda a sanar y clarificar deseos, sin forzar a la otra persona.",
+    interes: "Enfoca tu magnetismo y claridad, honrando los tiempos y el consentimiento."
+  };
+  return map[status] || "";
+}
+
+function stepsByStyle(style, you, partner, goal){
+  const baseAfirm = {
+    dulzura: `«Entre ${you} y ${partner} florecen la amabilidad y el respeto mutuo»`,
+    reconciliacion: `«${you} y ${partner} abren caminos de escucha y perdón»`,
+    pasional: `«La atracción entre ${you} y ${partner} es mutua, alegre y respetuosa»`,
+    compromiso: `«La estabilidad y el cuidado crecen entre ${you} y ${partner}»`
+  }[goal];
+
+  const blocks = {
+    meditacion: [
+      "Siéntate cómodo/a con la espalda erguida. Cerrá los ojos y respirá profundo 5 veces.",
+      "Llevá la atención al pecho y recordá un momento de cariño genuino.",
+      "En cada exhalación repetí en silencio tu intención principal.",
+      `Con suavidad, sostené la afirmación: ${baseAfirm}.`,
+      "Agradecé en voz baja lo que ya existe y lo que estás dispuesto/a a ofrecer."
+    ],
+    escritura: [
+      "Tomá una hoja y escribí 3 cosas que valorás de vos y 3 de la otra persona.",
+      "Escribí 3 gestos concretos que podés ofrecer en los próximos días.",
+      `Cerrá con una frase de intención: ${baseAfirm}.`,
+      "Leé en voz baja lo que escribiste y guardalo en un lugar especial.",
+      "Respirá profundo 3 veces enfocándote en la calma."
+    ],
+    visualizacion: [
+      "Con ojos cerrados, imaginá un encuentro amable donde ambos se sienten seguros.",
+      "Observá detalles: tono de voz, ritmo de la respiración, miradas.",
+      `Visualizá cómo se expresa tu objetivo (p. ej., reconciliación). Repetí: ${baseAfirm}.`,
+      "Percibí cómo te sentís en el cuerpo cuando la conexión fluye.",
+      "Agradecé la imagen y abrí los ojos lentamente."
+    ],
+    afirmaciones: [
+      "De pie o sentado/a, con la columna erguida, respirá profundo 5 veces.",
+      `Repetí 9 veces en voz baja: ${baseAfirm}.`,
+      "Sumá 3 afirmaciones propias que nazcan del corazón.",
+      "Al final, una respiración profunda y una sonrisa suave.",
+      "Guardá en tu teléfono una nota con tu afirmación para releerla."
+    ]
+  };
+  return blocks[style] || blocks.afirmaciones;
+}
+
+function durationText(freq, moment){
+  const f = { "7":"a diario por 7 días", "14":"a diario por 14 días", "28":"3 veces por semana durante 28 días" }[freq] || "durante varios días";
+  return `${f}, preferentemente por la ${moment}.`;
+}
+
+function buildRitual(){
+  const you = $("#youName").value.trim() || "Yo";
+  const partner = $("#partnerName").value.trim() || "mi persona especial";
+  const status = $("#status").value;
+  const goal = $("#goal").value;
+  const style = $("#style").value;
+  const moment = $("#moment").value;
+  const freq = $("#freq").value;
+  const privacy = $("#privacy").value;
+  const intention = $("#intention").value.trim();
+
+  const goalLabel = (document.querySelector("#goal option:checked")?.textContent) || "Ritual";
+  const styleLabel = (document.querySelector("#style option:checked")?.textContent) || "";
+  const intro = buildIntro(status);
+  const steps = stepsByStyle(style, you, partner, goal).map((p,i)=> `${i+1}. ${p}`).join("\n");
+  const dur = durationText(freq, moment);
+  const priv = privacy === "discreto" ? "Versión breve y discreta (5–7 min)." : "Versión completa y pausada (10–15 min).";
+
+  const extra = intention ? `\nIntención personal:\n“${intention}”.` : "";
+
+  const texto =
+`Ritual para ${you} y ${partner} — enfoque: ${goalLabel}
+Fecha: ${today()} | Estilo: ${styleLabel}
+Contexto: ${intro}
+
+Indicaciones:
+- ${priv}
+- Repetición: ${dur}
+
+Pasos:
+${steps}${extra}
+
+Cierre:
+- Agradecé en voz baja y llevá una mano al pecho por 3 respiraciones.
+- Si algo te incomoda, pausá. El amor florece con libertad y consentimiento.`;
+
+  return texto;
+}
+
+/* Eventos */
+$("#btnGen").addEventListener("click", ()=>{
+  try{
+    const ritual = buildRitual();
+    $("#result").textContent = ritual;
+    $("#resultCard").style.display = "block";
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  }catch(e){
+    console.error(e);
+    alert("Ups, hubo un error generando el ritual. Revisá la consola del navegador.");
+  }
+});
+
+$("#btnCopy").addEventListener("click", async ()=>{
+  const txt = $("#result").textContent.trim();
+  if (!txt){ alert("Generá el ritual primero 🙂"); return; }
+  try{ await navigator.clipboard.writeText(txt); alert("Ritual copiado ✅"); }
+  catch{ alert("No se pudo copiar automáticamente. Seleccioná y copiá a mano."); }
+});
+
+$("#btnClear").addEventListener("click", ()=>{
+  ["youName","partnerName","intention"].forEach(id=> $("#"+id).value="");
+  $("#status").value="pareja";
+  $("#goal").value="dulzura";
+  $("#style").value="meditacion";
+  $("#moment").value="mañana";
+  $("#freq").value="7";
+  $("#privacy").value="discreto";
+  $("#result").textContent="";
+  $("#resultCard").style.display="none";
+});
+</script>
+</body>
+</html>
